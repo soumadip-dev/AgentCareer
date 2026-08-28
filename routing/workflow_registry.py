@@ -36,11 +36,13 @@ class WorkflowRegistry:
                 "reviewer",
             ],
             "certification": [
-                "researcher",
+                "planner",
+                ["researcher", "certification"],
                 "writer",
             ],
             "project": [
-                "researcher",
+                "planner",
+                ["researcher", "project"],
                 "writer",
             ],
             "review": [
