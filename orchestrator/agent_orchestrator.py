@@ -8,10 +8,12 @@ The orchestrator is responsible for:
 1. Registering available AI agents.
 2. Executing agents in the order defined by a workflow.
 3. Passing shared state through the agent workflow.
-4. Returning the response produced by the final agent.
-5. Retrying failed agent executions.
-6. Tracking execution details.
-7. Returning the final response.
+4. Requesting human approval before executing designated agents.
+5. Allowing the user to cancel the workflow when approval is denied.
+6. Returning the response produced by the final agent.
+7. Retrying failed agent executions.
+8. Tracking execution details.
+9. Displaying the workflow execution summary.
 """
 
 import time
@@ -48,6 +50,7 @@ class AgentOrchestrator:
         self.conversation_memory = conversation_memory
         self._agents: dict[str, BaseAgent] = {}
         self._execution_results: list[AgentExecutionResult] = []
+        self._approval_required_agents = {"reviewer"}
 
     def register(self, agent: BaseAgent) -> None:
         """
@@ -102,6 +105,30 @@ class AgentOrchestrator:
                 f"{agent.get_agent_name()} Agent"
                 f"[/bold white]..."
             )
+
+            if agent_name.lower() in self._approval_required_agents:
+                approved = self._request_human_approval(agent)
+
+                if not approved:
+                    print(
+                        f"[bold red]"
+                        f"Execution of {agent.get_agent_name()} Agent "
+                        f"was cancelled by the user."
+                        f"[/bold red]"
+                    )
+
+                    self._execution_results.append(
+                        AgentExecutionResult(
+                            agent_name=agent.get_agent_name(),
+                            status="SKIPPED",
+                            attempts=0,
+                            execution_duration=0.0,
+                            error_message="Execution was cancelled by the user.",
+                        )
+                    )
+
+                    print("[bold red]Workflow stopped by user.[/bold red]")
+                    break
 
             # final_response = agent.execute()
             final_response = self._execute_with_retry(agent)
@@ -189,13 +216,41 @@ class AgentOrchestrator:
 
         raise RuntimeError(
             f"Failed to execute "
-            f"{agent.get_agent_name()} agent "
+            f"{agent.get_agent_name()} Agent "
             f"after {self.MAX_RETRIES} attempts."
         ) from last_exception
 
+    def _request_human_approval(self, agent: BaseAgent) -> bool:
+        """
+        Ask the user for approval before executing an AI agent.
+
+        Args:
+            agent: AI agent instance.
+
+        Returns:
+            bool: True if the user approves, False otherwise.
+        """
+        print(f"\n[dim]{'=' * 70}[/dim]")
+        print("[bold cyan]Human Approval Required[/bold cyan]")
+        print(f"[dim]{'=' * 70}[/dim]\n")
+
+        print(f"[bold yellow]Agent Name:[/bold yellow] {agent.get_agent_name()}")
+
+        while True:
+            user_input = input("Approve? (Y/N): ").strip().lower()
+
+            if user_input in {"y", "yes"}:
+                return True
+
+            elif user_input in {"n", "no"}:
+                return False
+
+            else:
+                print("[red]Invalid input. Please enter 'Y' or 'N'.[/red]")
+
     def get_execution_results(self) -> list[AgentExecutionResult]:
         """
-        Return the execution Summary.
+        Return the execution summary.
         """
         return self._execution_results
 
@@ -210,4 +265,5 @@ class AgentOrchestrator:
         for result in self._execution_results:
             result.display()
             print(f"\n[dim]{'-' * 70}[/dim]")
+
         print(f"[dim]{'=' * 70}[/dim]")
