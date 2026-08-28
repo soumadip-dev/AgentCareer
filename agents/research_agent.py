@@ -39,12 +39,12 @@ class ResearchAgent(BaseAgent):
 
     def build_prompt(self) -> str:
         # Intentionally fail the first two attempts to test the retry mechanism.
-        self.counter += 1
+        # self.counter += 1
 
-        if self.counter < 3:
-            raise RuntimeError(
-                "Simulated research agent failure for retry mechanism testing."
-            )
+        # if self.counter < 3:
+        #     raise RuntimeError(
+        #         "Simulated research agent failure for retry mechanism testing."
+        #     )
 
         planner_response = self.memory.get("planner")
 

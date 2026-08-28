@@ -17,6 +17,7 @@ The orchestrator is responsible for:
 """
 
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 from rich import print
 
@@ -25,6 +26,8 @@ from memory.conversation_memory import ConversationMemory
 from memory.shared_memory import SharedMemory
 from models.agent_execution_result import AgentExecutionResult
 from models.agent_response import AgentResponse
+
+from routing.workflow_registry import Workflow
 
 
 class AgentOrchestrator:
@@ -65,7 +68,7 @@ class AgentOrchestrator:
         agent_name = agent.get_agent_name().lower().strip()
         self._agents[agent_name] = agent
 
-    def execute(self, workflow: list[str]) -> AgentResponse:
+    def execute(self, workflow: Workflow) -> AgentResponse:
         """
         Execute the agents in the order defined by the workflow.
 
@@ -93,45 +96,51 @@ class AgentOrchestrator:
         final_response: AgentResponse
 
         for step, agent_name in enumerate(workflow, start=1):
-            normalized_name = agent_name.lower().strip()
-            agent = self._agents.get(normalized_name)
+            if isinstance(agent_name, list):
+                parallel_response = self._execute_parallel(agent_name)
+                if parallel_response:
+                    # Store the last response
+                    final_response = parallel_response[-1]
+            else:
+                normalized_name = agent_name.lower().strip()
+                agent = self._agents.get(normalized_name)
 
-            if agent is None:
-                raise ValueError(f"Agent '{agent_name}' is not registered.")
+                if agent is None:
+                    raise ValueError(f"Agent '{agent_name}' is not registered.")
 
-            print(
-                f"\n[bold blue]Step {step}:[/bold blue] "
-                f"Executing [bold white]"
-                f"{agent.get_agent_name()} Agent"
-                f"[/bold white]..."
-            )
+                print(
+                    f"\n[bold blue]Step {step}:[/bold blue] "
+                    f"Executing [bold white]"
+                    f"{agent.get_agent_name()} Agent"
+                    f"[/bold white]..."
+                )
 
-            if agent_name.lower() in self._approval_required_agents:
-                approved = self._request_human_approval(agent)
+                if agent_name.lower() in self._approval_required_agents:
+                    approved = self._request_human_approval(agent)
 
-                if not approved:
-                    print(
-                        f"[bold red]"
-                        f"Execution of {agent.get_agent_name()} Agent "
-                        f"was cancelled by the user."
-                        f"[/bold red]"
-                    )
-
-                    self._execution_results.append(
-                        AgentExecutionResult(
-                            agent_name=agent.get_agent_name(),
-                            status="SKIPPED",
-                            attempts=0,
-                            execution_duration=0.0,
-                            error_message="Execution was cancelled by the user.",
+                    if not approved:
+                        print(
+                            f"[bold red]"
+                            f"Execution of {agent.get_agent_name()} Agent "
+                            f"was cancelled by the user."
+                            f"[/bold red]"
                         )
-                    )
 
-                    print("[bold red]Workflow stopped by user.[/bold red]")
-                    break
+                        self._execution_results.append(
+                            AgentExecutionResult(
+                                agent_name=agent.get_agent_name(),
+                                status="SKIPPED",
+                                attempts=0,
+                                execution_duration=0.0,
+                                error_message="Execution was cancelled by the user.",
+                            )
+                        )
 
-            # final_response = agent.execute()
-            final_response = self._execute_with_retry(agent)
+                        print("[bold red]Workflow stopped by user.[/bold red]")
+                        break
+
+                # final_response = agent.execute()
+                final_response = self._execute_with_retry(agent)
 
         print(f"\n[dim]{separator}[/dim]")
         print("[bold green]MULTI-AGENT WORKFLOW COMPLETED[/bold green]")
@@ -219,6 +228,28 @@ class AgentOrchestrator:
             f"{agent.get_agent_name()} Agent "
             f"after {self.MAX_RETRIES} attempts."
         ) from last_exception
+
+    def _execute_parallel(self, agent_names: list[str]):
+        """ """
+        print(
+            f"\n[bold cyan]Executing {len(agent_names)} Agents in Parallel[/bold cyan]"
+        )
+        print(
+            "[dim]Agents: " + ", ".join(name.title() for name in agent_names) + "[/dim]"
+        )
+
+        with ThreadPoolExecutor(max_workers=len(agent_names)) as executor:
+            futures = []
+            for agent_name in agent_names:
+                agent = self._agents[agent_name.lower()]
+                futures.append(executor.submit(self._execute_with_retry, agent))
+
+        responses = []
+
+        for future in futures:
+            responses.append(future.result())
+
+        return responses
 
     def _request_human_approval(self, agent: BaseAgent) -> bool:
         """

@@ -11,7 +11,12 @@ Responsibilities:
 5. Display all registered workflows.
 """
 
+from typing import TypeAlias
+
 from rich import print
+
+WorkflowStep: TypeAlias = str | list[str]
+Workflow: TypeAlias = list[WorkflowStep]
 
 
 class WorkflowRegistry:
@@ -23,22 +28,35 @@ class WorkflowRegistry:
         """
         Initialize the workflow registry with the default workflows.
         """
-        self._workflows: dict[str, list[str]] = {
-            "roadmap": ["planner", "researcher", "writer", "reviewer"],
-            "certification": ["researcher", "writer"],
-            "project": ["researcher", "writer"],
-            "review": ["reviewer"],
+        self._workflows: dict[str, Workflow] = {
+            "roadmap": [
+                "planner",
+                ["researcher", "project", "certification"],
+                "writer",
+                "reviewer",
+            ],
+            "certification": [
+                "researcher",
+                "writer",
+            ],
+            "project": [
+                "researcher",
+                "writer",
+            ],
+            "review": [
+                "reviewer",
+            ],
         }
 
-    def get_workflow(self, workflow_name: str) -> list[str]:
+    def get_workflow(self, workflow_name: str) -> Workflow:
         """
-        Retrieve the ordered list of agents for a workflow.
+        Retrieve the workflow by name.
 
         Args:
             workflow_name: Name of the workflow to retrieve.
 
         Returns:
-            A list of agent names in execution order.
+            Workflow containing sequential agents and/or parallel agent groups.
 
         Raises:
             ValueError: If the requested workflow is not registered.
@@ -48,13 +66,12 @@ class WorkflowRegistry:
         if not self.workflow_exists(workflow_name):
             raise ValueError(f"Workflow '{workflow_name}' is not registered.")
 
-        # Return a copy to prevent external code from modifying
-        # the workflow stored inside the registry.
+        # Return a copy to prevent external modification.
         return self._workflows[workflow_name].copy()
 
     def workflow_exists(self, workflow_name: str) -> bool:
         """
-        Check whether a workflow is registered.
+        Check whether a workflow exists.
 
         Args:
             workflow_name: Name of the workflow to check.
@@ -67,34 +84,39 @@ class WorkflowRegistry:
     def get_available_workflows(self) -> list[str]:
         """
         Return the names of all registered workflows.
-
-        Returns:
-            A list containing all registered workflow names.
         """
         return list(self._workflows.keys())
 
     def register_workflow(
         self,
         workflow_name: str,
-        agents: list[str],
+        agents: Workflow,
     ) -> None:
         """
         Register a new workflow.
 
         Args:
-            workflow_name: Name of the workflow to register.
-            agents: Ordered list of agent names to execute.
+            workflow_name: Name of the workflow.
+            agents: Workflow steps containing sequential agents
+                and/or parallel agent groups.
 
         Raises:
             ValueError: If a workflow with the same name already exists.
         """
         workflow_name = workflow_name.lower()
-        agents = [agent.lower() for agent in agents]
 
         if self.workflow_exists(workflow_name):
             raise ValueError(f"Workflow '{workflow_name}' already exists.")
 
-        self._workflows[workflow_name] = agents
+        normalized_agents: Workflow = []
+
+        for agent in agents:
+            if isinstance(agent, list):
+                normalized_agents.append([name.lower().strip() for name in agent])
+            else:
+                normalized_agents.append(agent.lower().strip())
+
+        self._workflows[workflow_name] = normalized_agents
 
     def display(self) -> None:
         """
@@ -111,16 +133,26 @@ class WorkflowRegistry:
                 "[italic yellow]No workflows are currently registered.[/italic yellow]"
             )
         else:
-            for workflow_name, agents in self._workflows.items():
+            for workflow_name, steps in self._workflows.items():
                 print(
                     f"\n[bold green]Workflow:[/bold green] "
                     f"[bold white]{workflow_name.title()}[/bold white]"
                 )
 
-                for index, agent in enumerate(agents, start=1):
-                    print(
-                        f"  [bold yellow]{index}.[/bold yellow] "
-                        f"[blue]{agent.title()} Agent[/blue]"
-                    )
+                for index, step in enumerate(steps, start=1):
+
+                    if isinstance(step, list):
+                        agents = ", ".join(agent.title() for agent in step)
+
+                        print(
+                            f"  [bold yellow]{index}.[/bold yellow] "
+                            f"[blue]Parallel:[/blue] "
+                            f"[blue]{agents}[/blue]"
+                        )
+                    else:
+                        print(
+                            f"  [bold yellow]{index}.[/bold yellow] "
+                            f"[blue]{step.title()} Agent[/blue]"
+                        )
 
         print(f"\n[bold cyan]{separator}[/bold cyan]\n")

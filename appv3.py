@@ -15,6 +15,8 @@ from rich import print
 from agents.planner_agent import PlannerAgent
 from agents.research_agent import ResearchAgent
 from agents.reviewer_agent import ReviewerAgent
+from agents.project_agent import ProjectAgent
+from agents.certification_agent import CertificationAgent
 from agents.writer_agent import WriterAgent
 from knowledge.knowledge_base import KnowledgeBase
 from memory.conversation_memory import ConversationMemory
@@ -124,6 +126,20 @@ def main() -> None:
             knowledge_base,
         )
 
+        project = ProjectAgent(
+            memory,
+            conversation_memory,
+            gemini_service,
+            knowledge_base,
+        )
+
+        certification = CertificationAgent(
+            memory,
+            conversation_memory,
+            gemini_service,
+            knowledge_base,
+        )
+
         # Create the orchestrator with access to the shared
         # memory and conversation history.
         orchestrator = AgentOrchestrator(
@@ -136,6 +152,8 @@ def main() -> None:
         orchestrator.register(researcher)
         orchestrator.register(writer)
         orchestrator.register(reviewer)
+        orchestrator.register(project)
+        orchestrator.register(certification)
 
         # Route the user's query to the most appropriate workflow.
         decision = workflow_router.route(user_query)
