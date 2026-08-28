@@ -1,0 +1,92 @@
+{
+  "ai-engineer": {
+    "keywords": [
+      "ai engineer",
+      "artificial intelligence engineer",
+      "ai engineering",
+      "artificial intelligence",
+      "machine learning engineer",
+      "ml engineer"
+    ],
+    "skills": [
+      "Python",
+      "Machine Learning",
+      "Deep Learning",
+      "Gen AI",
+      "Agentic AI",
+      "RAG",
+      "MCP"
+    ],
+    "certifications": [
+      "AWS Certified Machine Learning - Specialty",
+      "TensorFlow Developer Certificate",
+      "Microsoft Certified: Azure AI Engineer Associate",
+      "Google Cloud Professional Machine Learning Engineer",
+      "DeepLearning.AI Generative AI with LLMs Certificate",
+      "LangChain & LlamaIndex Developer Certifications"
+    ],
+    "projects": [
+      "Autonomous Multi-Agent Task Assistant using MCP & LangGraph",
+      "Enterprise Multi-Source RAG Knowledge Base with Hybrid Search",
+      "Real-time Multimodal AI Code Reviewer & Analyzer"
+    ]
+  },
+  "data-engineer": {
+    "keywords": [
+      "data engineer",
+      "data engineering",
+      "data engineer career",
+      "data pipeline engineer",
+      "big data engineer"
+    ],
+    "skills": [
+      "Python",
+      "SQL",
+      "Apache Spark",
+      "Data Warehousing",
+      "ETL Pipelines",
+      "Kafka",
+      "Airflow"
+    ],
+    "certifications": [
+      "AWS Certified Data Engineer - Associate",
+      "Google Cloud Professional Data Engineer",
+      "Databricks Certified Data Engineer Professional",
+      "SnowPro Core Certification"
+    ],
+    "projects": [
+      "Real-time Streaming Analytics Pipeline with Kafka, Spark & Iceberg",
+      "Automated Snowflake Data Lakehouse ETL Orchestrated via Airflow",
+      "End-to-End E-Commerce Clickstream Data Pipeline & Data Mart"
+    ]
+  },
+  "devops-engineer": {
+    "keywords": [
+      "devops engineer",
+      "devops",
+      "devops engineering",
+      "devops career",
+      "infrastructure engineer"
+    ],
+    "skills": [
+      "Docker",
+      "Kubernetes",
+      "Jenkins",
+      "Ansible",
+      "Linux Administration",
+      "Git",
+      "Monitoring & Alerting"
+    ],
+    "certifications": [
+      "Certified Kubernetes Administrator (CKA)",
+      "AWS Certified DevOps Engineer - Professional",
+      "Docker Certified Associate (DCA)",
+      "Microsoft Certified: DevOps Engineer Expert"
+    ],
+    "projects": [
+      "GitOps-driven Production Kubernetes Cluster Deployment via ArgoCD",
+      "Zero-Downtime Automated CI/CD Pipeline with Automated Rollbacks",
+      "Infrastructure Monitoring Stack using Prometheus, Grafana & Alertmanager"
+    ]
+  }
+}

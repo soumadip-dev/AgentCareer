@@ -1,0 +1,149 @@
+# Python
+
+# Python bytecode
+
+**pycache**/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+
+venv/
+.venv/
+env/
+ENV/
+
+# Testing & coverage
+
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Type checking
+
+.mypy_cache/
+.pyre/
+
+# Jupyter
+
+.ipynb_checkpoints/
+
+# Build artifacts
+
+dist/
+build/
+*.egg-info/
+
+# Databases
+
+*.db
+*.sqlite3
+
+# Logs
+
+logs/
+*.log
+
+# Uploaded files
+
+uploads/
+media/
+
+# Environment variables
+
+.env
+.env.*
+
+# FastAPI runtime
+
+*.pid
+
+# VS Code
+
+.vscode/
+.vscode-test
+
+# IntelliJ / Android Studio
+
+.idea/
+*.iml
+misc.xml
+deploymentTargetDropDown.xml
+render.experimental.xml
+
+# Eclipse
+
+.project
+.classpath
+
+# Android
+
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+output.json
+*.jks
+*.keystore
+google-services.json
+*.hprof
+
+# Gradle
+
+.gradle/
+**/build/
+!src/**/build/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+.gradletasknamecache
+
+# Xcode
+
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+
+# macOS
+
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Linux
+
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Misc
+
+*.pem
+.pids
+.pids-debug.log
+.pids-debug.log*
+.pids-debug.log.json
+.pids-debug.log.json.*
+.pids-debug.log.*
+.pids-debug.*
+
+# Project-specific
+
+multiagent
