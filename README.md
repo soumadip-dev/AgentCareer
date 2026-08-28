@@ -2,14 +2,14 @@
 
 <p align="center">
   AgentCareer is a modular, multi-agent AI career coaching platform powered by Gemini.
-  It coordinates specialized agents (Planner, Researcher, Project, Certification,
-  Writer, and Reviewer) using dynamic workflow routing and domain knowledge retrieval
-  to analyze career goals and generate personalized, step-by-step roadmaps.
+  It uses specialized agents, dynamic workflow routing, and knowledge retrieval to
+  analyze career goals and generate personalized roadmaps through a
+  <strong>Terminal CLI</strong> and <strong>Streamlit Web App</strong>.
 </p>
 
-<p align="center">
-  The system provides two interactive user interfaces: a <strong>Terminal CLI</strong> (using the <code>rich</code> library) and a <strong>Streamlit Web Application</strong>.
-</p>
+<div align="center">
+  <img src="./banner.jpg" alt="AgentCareer Banner" width="100%">
+</div>
 
 ---
 
