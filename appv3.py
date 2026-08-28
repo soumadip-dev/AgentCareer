@@ -159,6 +159,9 @@ def main() -> None:
         print(f"[dim]{separator}[/dim]")
         print(final_response.output)
 
+        # Execution Summary
+        orchestrator.display_execution_summary()
+
 
 if __name__ == "__main__":
     main()

@@ -144,6 +144,3 @@ Temporary Items
 .pids-debug.log.*
 .pids-debug.*
 
-# Project-specific
-
-multiagent
